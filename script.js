@@ -2,44 +2,8 @@
    Abu Az work — Logic
    =========================== */
 
-const ADMIN_PASSWORD = 'abuaz2026'; // غيّرها لاحقاً
-const STORAGE_KEY = 'abuaz_projects';
-
-// بيانات تجريبية أولية (تظهر أول مرة فقط)
-const DEMO_PROJECTS = [
-  {
-    id: '1',
-    title: 'هوية بصرية لمقهى هادئ',
-    category: 'branding',
-    desc: 'تصميم هوية كاملة تشمل الشعار، الألوان، والتطبيقات على العبوات واللافتات بأجواء دافئة ومريحة.',
-    image: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800&q=80',
-    year: 2025
-  },
-  {
-    id: '2',
-    title: 'واجهة تطبيق تأمل',
-    category: 'ui',
-    desc: 'تصميم واجهة مستخدم لتطبيق تأمل يومي، بألوان هادئة وتجربة سلسة تساعد على الاسترخاء.',
-    image: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&q=80',
-    year: 2025
-  },
-  {
-    id: '3',
-    title: 'سلسلة رسوم توضيحية',
-    category: 'illustration',
-    desc: 'مجموعة رسوم رقمية مستوحاة من الطبيعة والحياة اليومية بأسلوب بسيط ودافئ.',
-    image: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&q=80',
-    year: 2024
-  },
-  {
-    id: '4',
-    title: 'تصميم غلاف كتاب',
-    category: 'other',
-    desc: 'غلاف كتاب أدبي بلمسة كلاسيكية معاصرة، يركز على الخطوط والمساحات السلبية.',
-    image: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=800&q=80',
-    year: 2024
-  }
-];
+const ADMIN_PASSWORD = 'abuaz2026';
+const STORAGE_KEY = 'abuaz_projects_v2';
 
 // ---------- State ----------
 let projects = [];
@@ -77,13 +41,12 @@ function loadProjects() {
   if (saved) {
     try {
       projects = JSON.parse(saved);
+      if (!Array.isArray(projects)) projects = [];
     } catch {
-      projects = [...DEMO_PROJECTS];
-      saveProjects();
+      projects = [];
     }
   } else {
-    projects = [...DEMO_PROJECTS];
-    saveProjects();
+    projects = [];
   }
 }
 
@@ -101,6 +64,7 @@ function renderProjects() {
 
   if (filtered.length === 0) {
     emptyState.hidden = false;
+    if (statProjects) statProjects.textContent = projects.length;
     return;
   }
   emptyState.hidden = true;
@@ -110,9 +74,12 @@ function renderProjects() {
     card.className = 'project-card';
     card.style.animationDelay = `${i * 0.08}s`;
     card.dataset.id = p.id;
+
+    const imgSrc = p.image || 'https://via.placeholder.com/800x600/efede9/6b6760?text=No+Image';
+
     card.innerHTML = `
       <div class="thumb">
-        <img src="${p.image}" alt="${escapeHtml(p.title)}" loading="lazy" />
+        <img src="${imgSrc}" alt="${escapeHtml(p.title)}" loading="lazy" onerror="this.src='https://via.placeholder.com/800x600/efede9/6b6760?text=No+Image'" />
         <div class="overlay"></div>
       </div>
       <div class="project-info">
@@ -141,8 +108,9 @@ function categoryLabel(cat) {
 }
 
 function openModal(project) {
+  const imgSrc = project.image || 'https://via.placeholder.com/800x600/efede9/6b6760?text=No+Image';
   modalBody.innerHTML = `
-    <img src="${project.image}" alt="${escapeHtml(project.title)}" />
+    <img src="${imgSrc}" alt="${escapeHtml(project.title)}" onerror="this.src='https://via.placeholder.com/800x600/efede9/6b6760?text=No+Image'" />
     <div class="modal-info">
       <div class="project-cat">${categoryLabel(project.category)}</div>
       <h2>${escapeHtml(project.title)}</h2>
@@ -163,13 +131,17 @@ function closeModal() {
 function openAdmin() {
   adminPanel.hidden = false;
   document.body.style.overflow = 'hidden';
+
   if (isAdminLoggedIn) {
     showDashboard();
   } else {
+    adminLogin.style.display = 'flex';
+    adminDashboard.style.display = 'none';
     adminLogin.hidden = false;
     adminDashboard.hidden = true;
     adminPassword.value = '';
     loginError.hidden = true;
+    adminPassword.focus();
   }
 }
 
@@ -179,54 +151,69 @@ function closeAdmin() {
 }
 
 function login() {
-  if (adminPassword.value === ADMIN_PASSWORD) {
+  const pass = adminPassword.value.trim();
+  if (pass === ADMIN_PASSWORD) {
     isAdminLoggedIn = true;
     loginError.hidden = true;
     showDashboard();
   } else {
     loginError.hidden = false;
+    adminPassword.value = '';
+    adminPassword.focus();
   }
 }
 
 function logout() {
   isAdminLoggedIn = false;
+  adminLogin.style.display = 'flex';
+  adminDashboard.style.display = 'none';
   adminLogin.hidden = false;
   adminDashboard.hidden = true;
   adminPassword.value = '';
+  loginError.hidden = true;
 }
 
 function showDashboard() {
+  adminLogin.style.display = 'none';
   adminLogin.hidden = true;
+  adminDashboard.style.display = 'block';
   adminDashboard.hidden = false;
-  renderAdminList();
+
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.querySelector('.tab[data-tab="add"]').classList.add('active');
+  const addTab = document.querySelector('.tab[data-tab="add"]');
+  if (addTab) addTab.classList.add('active');
+
   document.getElementById('tabAdd').hidden = false;
   document.getElementById('tabList').hidden = true;
+
+  renderAdminList();
 }
 
 function renderAdminList() {
   adminList.innerHTML = '';
   if (projects.length === 0) {
-    adminList.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:1rem;">لا توجد مشاريع</p>';
+    adminList.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:1.5rem;">لا توجد مشاريع بعد</p>';
     return;
   }
+
   projects.forEach(p => {
     const item = document.createElement('div');
     item.className = 'admin-item';
+    const imgSrc = p.image || 'https://via.placeholder.com/100x75/efede9/6b6760?text=-';
     item.innerHTML = `
-      <img src="${p.image}" alt="" />
+      <img src="${imgSrc}" alt="" onerror="this.src='https://via.placeholder.com/100x75/efede9/6b6760?text=-'" />
       <div class="admin-item-info">
         <strong>${escapeHtml(p.title)}</strong>
         <span>${categoryLabel(p.category)}</span>
       </div>
-      <button class="admin-item-delete" data-id="${p.id}" title="حذف">×</button>
+      <button type="button" class="admin-item-delete" data-id="${p.id}" title="حذف">×</button>
     `;
     adminList.appendChild(item);
   });
 
   adminList.querySelectorAll('.admin-item-delete').forEach(btn => {
     btn.addEventListener('click', (e) => {
+      e.preventDefault();
       e.stopPropagation();
       const id = btn.dataset.id;
       if (confirm('هل تريد حذف هذا المشروع؟')) {
@@ -241,47 +228,64 @@ function renderAdminList() {
 
 function handleAddProject(e) {
   e.preventDefault();
+
   const title = document.getElementById('pTitle').value.trim();
   const category = document.getElementById('pCategory').value;
   const desc = document.getElementById('pDesc').value.trim();
-  const year = document.getElementById('pYear').value;
+  const yearVal = document.getElementById('pYear').value;
   const imageUrl = document.getElementById('pImage').value.trim();
   const fileInput = document.getElementById('pImageFile');
 
-  if (!title) return;
+  if (!title) {
+    alert('الرجاء كتابة عنوان المشروع');
+    return;
+  }
 
   const finish = (image) => {
     const newProject = {
-      id: Date.now().toString(),
+      id: Date.now().toString() + Math.random().toString(36).slice(2, 7),
       title,
       category,
       desc,
-      image: image || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&q=80',
-      year: year || null
+      image: image || '',
+      year: yearVal || null
     };
+
     projects.unshift(newProject);
     saveProjects();
     renderProjects();
     renderAdminList();
     projectForm.reset();
-    document.querySelector('.tab[data-tab="list"]').click();
+
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    const listTab = document.querySelector('.tab[data-tab="list"]');
+    if (listTab) listTab.classList.add('active');
+    document.getElementById('tabAdd').hidden = true;
+    document.getElementById('tabList').hidden = false;
+
     alert('تم إضافة المشروع بنجاح ✓');
   };
 
   if (fileInput.files && fileInput.files[0]) {
+    const file = fileInput.files[0];
+    if (file.size > 5 * 1024 * 1024) {
+      alert('حجم الصورة كبير جداً (الحد الأقصى 5 ميجا)');
+      return;
+    }
     const reader = new FileReader();
     reader.onload = (ev) => finish(ev.target.result);
-    reader.readAsDataURL(fileInput.files[0]);
-  } else if (imageUrl) {
-    finish(imageUrl);
+    reader.onerror = () => {
+      alert('حدث خطأ أثناء قراءة الصورة');
+      finish(imageUrl || '');
+    };
+    reader.readAsDataURL(file);
   } else {
-    finish(null);
+    finish(imageUrl || '');
   }
 }
 
 // ---------- Events ----------
 function setupEventListeners() {
-  // Filters
   filters.addEventListener('click', (e) => {
     if (e.target.classList.contains('filter-btn')) {
       document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -291,10 +295,10 @@ function setupEventListeners() {
     }
   });
 
-  // Modal close
   projectModal.querySelectorAll('[data-close]').forEach(el => {
     el.addEventListener('click', closeModal);
   });
+
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
       closeModal();
@@ -302,18 +306,19 @@ function setupEventListeners() {
     }
   });
 
-  // Admin
   document.getElementById('adminBtn').addEventListener('click', openAdmin);
   document.getElementById('adminClose').addEventListener('click', closeAdmin);
   document.getElementById('adminBackdrop').addEventListener('click', closeAdmin);
   document.getElementById('loginBtn').addEventListener('click', login);
   adminPassword.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') login();
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      login();
+    }
   });
   document.getElementById('logoutBtn').addEventListener('click', logout);
   projectForm.addEventListener('submit', handleAddProject);
 
-  // Tabs
   document.querySelectorAll('.tab').forEach(tab => {
     tab.addEventListener('click', () => {
       document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -325,7 +330,6 @@ function setupEventListeners() {
     });
   });
 
-  // Mobile menu
   const menuToggle = document.getElementById('menuToggle');
   const nav = document.getElementById('nav');
   menuToggle.addEventListener('click', () => {
@@ -335,7 +339,6 @@ function setupEventListeners() {
     link.addEventListener('click', () => nav.classList.remove('open'));
   });
 
-  // Active nav on scroll
   const sections = document.querySelectorAll('section[id]');
   window.addEventListener('scroll', () => {
     const scrollY = window.scrollY + 120;
@@ -373,7 +376,7 @@ function setupScrollAnimations() {
 
 function escapeHtml(str) {
   if (!str) return '';
-  return str
+  return String(str)
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
