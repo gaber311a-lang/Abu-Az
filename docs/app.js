@@ -1,6 +1,6 @@
 /**
  * موقع أبو عز — SPA (معاينة / localStorage)
- * هوية: أحمر #E42C23 على أبيض — بدون تخطيط Pinterest
+ * هوية: أحمر #E42C23 على أبيض — شبكة منتظمة، بدون تخطيط Pinterest
  */
 (function () {
   "use strict";
@@ -14,9 +14,9 @@
     for (let i = 0; i < str.length; i++) h = ((h << 5) + h) + str.charCodeAt(i);
     return (h >>> 0).toString(16);
   }
-  const ADMIN_PASS_HASH = "922724f9"; // demo gate — hint shown once in UI
+  const ADMIN_PASS_HASH = "922724f9"; // abu-ezz-admin — hint shown once in UI
 
-  const STORAGE_KEY = "abuaz_v1";
+  const STORAGE_KEY = "abuaz_v2";
 
   const DEFAULT_PALETTE = [
     "#E42C23", "#111111", "#FFFFFF", "#F5F5F5", "#1E88E5",
@@ -66,9 +66,9 @@
   let state = loadState() || defaultState();
   if (!state.sessionId) state.sessionId = uid("sess");
   if (!state.visitorCount) state.visitorCount = 1;
-  else if (!sessionStorage.getItem("abuaz_visit")) {
+  else if (!sessionStorage.getItem("abuaz_visit_v2")) {
     state.visitorCount += 1;
-    sessionStorage.setItem("abuaz_visit", "1");
+    sessionStorage.setItem("abuaz_visit_v2", "1");
     logActivity("زيارة جديدة (معاينة)");
   }
   if (!state.activityLog) state.activityLog = [];
@@ -146,7 +146,6 @@
       .replace(/"/g, "&quot;");
   }
 
-  // —— Views ——
   function viewHome() {
     const designs = state.designs;
     return `
@@ -158,6 +157,7 @@
           <a href="#/order" class="btn btn-primary">اطلب تصميم</a>
         </div>
       </section>
+      <div class="divider" aria-hidden="true"></div>
 
       <div class="section-head">
         <h2>أعمال مختارة</h2>
@@ -165,7 +165,7 @@
       </div>
 
       <div class="gallery-grid">
-        ${designs.map((d, i) => `
+        ${designs.map((d) => `
           <article class="gallery-card" data-open="${escapeHtml(d.id)}" role="button" tabindex="0">
             <div class="gallery-thumb">
               ${d.img
@@ -851,8 +851,7 @@
           id: uid("g"),
           title,
           tag: "جرافيكس",
-          img: "assets/sample-" + n + ".svg",
-          hue: Math.floor(Math.random() * 360)
+          img: "assets/sample-" + n + ".svg"
         });
         logActivity("إضافة تصميم: " + title);
         save();

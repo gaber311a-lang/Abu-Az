@@ -1,6 +1,6 @@
 # أبو عز — Brand Lock
 
-This file locks the visual identity for **موقع أبو عز**. Do not drift toward other brands (e.g. SEDRA honey) or prior Pinterest / violet DesignerAssets directions.
+Locked visual identity for **موقع أبو عز**. Do not use SEDRA / honey assets, or prior Pinterest / violet DesignerAssets directions.
 
 ## Name
 
@@ -17,7 +17,7 @@ This file locks the visual identity for **موقع أبو عز**. Do not drift t
 | Primary file | `docs/assets/logo-abu-ezz.jpg` |
 | Absolute path (workspace) | `/workspace/AbuAz/docs/assets/logo-abu-ezz.jpg` |
 | Appearance | Red Arabic wordmark **أبو عز** on white |
-| Favicon | Same JPEG via `rel="icon"` |
+| Favicon / Apple touch | Same JPEG |
 
 **Do not** use `logo-sedra-ref.jpg`, `sedra-logo.jpeg`, or any honey/SEDRA asset on this site.
 
@@ -25,23 +25,24 @@ This file locks the visual identity for **موقع أبو عز**. Do not drift t
 
 | Role | Hex | Notes |
 |------|-----|--------|
-| Primary red | `#E42C23` | Brand primary (in use sitewide) |
-| Logo red (reference) | ~`#E42410` | Approximate from wordmark; keep `#E42C23` as UI primary |
+| Primary red | `#E42C23` | Brand primary (sitewide UI) |
+| Logo red (reference) | ~`#E42410` | From wordmark; keep `#E42C23` as UI primary |
 | Canvas / background | `#FFFFFF` | Pure white |
 | Surface | `#FFFFFF` | Cards on white |
 | Text | `#1A1A1A` | Near-black |
 | Text secondary / muted | `#6B6B6B` | Soft gray |
 | Border | `#E8E8EA` | Soft gray border |
+| Border strong | `#D4D4D8` | Inputs / dividers |
 | Red soft (tints) | `rgba(228, 44, 35, 0.08)` | Selection / soft fills |
 | Red dark (press) | `#C71F18` | Active / pressed CTA |
 
-Derive neutrals only around **red + white**. No violet, purple, or Pinterest-style accent palettes.
+Neutrals only around **red + white**. No violet, purple, or Pinterest accent palettes.
 
 ## Layout & UX rules
 
 - Arabic **RTL**, mobile-first (iPhone Safari)
 - Clean, premium, editorial — **not** masonry / Pinterest feed
-- Uniform gallery cards (consistent aspect ratio), generous white space
+- Uniform gallery cards (fixed aspect ratio), generous white space
 - Routes: `#/` (home/gallery), `#/order`, `#/pay`, `#/orders`, `#/admin`
 
 ## Product scope
