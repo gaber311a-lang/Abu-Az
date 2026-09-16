@@ -3,214 +3,56 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#E42C23" />
-  <meta name="description" content="أبو عز — أتولييه تصميم جرافيكس فاخر. معرض، طلب تصميم، ومتابعة الطلبات." />
+  <meta name="theme-color" content="#E31C23" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <title>موقع أبو عز</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/jpeg" href="assets/logo-abu-ezz.jpg" />
   <link rel="stylesheet" href="styles.css" />
-  <link rel="icon" href="assets/logo-abu-ezz.jpg" type="image/jpeg" />
 </head>
 <body>
-  <div id="maintenanceOverlay" class="maintenance-overlay hidden" aria-live="polite">
+  <div id="maintenance-overlay" class="maintenance-overlay hidden" aria-hidden="true">
     <div class="maintenance-card">
       <div class="spinner"></div>
-      <p>جاري تحديث الموقع…</p>
-      <p class="muted">صيانة قصيرة — ثوانٍ معدودة</p>
+      <p>الموقع قيد التحديث…</p>
+      <p class="muted">يرجى الانتظار قليلاً</p>
     </div>
   </div>
 
-  <header class="site-header" id="siteHeader">
-    <div class="header-bar">
-      <button type="button" class="btn-cta" id="btnOrder" aria-label="اطلب تصميم">اطلب تصميم</button>
-      <a href="#gallery" class="brand" id="brandLink" aria-label="موقع أبو عز — الرئيسية">
-        <img src="assets/logo-abu-ezz.jpg" alt="أبو عز" class="brand-logo" width="120" height="160" />
-        <span class="brand-title">موقع أبو عز</span>
-      </a>
-      <div class="header-actions">
-        <button type="button" class="icon-btn hidden" id="btnBack" aria-label="رجوع">→</button>
-        <button type="button" class="link-btn hidden" id="btnMyOrders" aria-label="طلباتي">طلباتي</button>
-        <button type="button" class="icon-btn subtle" id="btnAdminGate" title="الإدارة" aria-label="الإدارة">⚙</button>
-      </div>
+  <header class="app-header" id="app-header">
+    <a href="#/" class="brand" aria-label="موقع أبو عز — الرئيسية">
+      <img src="assets/logo-abu-ezz.jpg" alt="أبُو عز" class="brand-logo" width="120" height="48" />
+      <span class="brand-title">موقع أبو عز</span>
+    </a>
+    <div class="header-actions">
+      <a href="#/orders" class="link-btn" id="btn-my-orders">طلباتي</a>
+      <a href="#/order" class="cta-btn" id="btn-order-design">اطلب تصميم</a>
     </div>
   </header>
 
-  <main id="app" class="app">
-    <!-- 1) Gallery -->
-    <section id="view-gallery" class="view active" data-view="gallery">
-      <div class="hero">
-        <h1>المعرض</h1>
-        <p class="hero-sub">تصاميم جرافيكس مرتّبة — أسلوب هادئ وفاخر</p>
-      </div>
-      <div class="gallery-grid" id="galleryGrid" role="list"></div>
-      <p class="footer-note">أبو عز · أتولييه تصميم · جرافيكس فقط</p>
-    </section>
+  <main id="app" class="app-main" role="main"></main>
 
-    <!-- Gallery detail -->
-    <section id="view-detail" class="view" data-view="detail">
-      <article class="detail-card">
-        <img id="detailImg" src="" alt="" class="detail-img" />
-        <h2 id="detailTitle"></h2>
-        <p id="detailDesc" class="muted"></p>
-        <button type="button" class="btn-primary full" id="btnOrderFromDetail">اطلب تصميم مشابه</button>
-      </article>
-    </section>
-
-    <!-- 2) Order flow -->
-    <section id="view-order" class="view" data-view="order">
-      <div class="flow-head">
-        <h1>طلب تصميم</h1>
-        <div class="steps-bar" id="stepsBar" aria-hidden="true"></div>
-        <p class="step-label" id="stepLabel"></p>
-      </div>
-      <div class="flow-body" id="orderSteps"></div>
-      <div class="flow-nav">
-        <button type="button" class="btn-secondary" id="btnStepPrev">السابق</button>
-        <button type="button" class="btn-primary" id="btnStepNext">التالي</button>
-      </div>
-    </section>
-
-    <!-- 3) Payment -->
-    <section id="view-pay" class="view" data-view="pay">
-      <div class="pay-sheet" id="paySheet">
-        <div class="pay-handle"></div>
-        <p class="demo-badge">معاينة · لا تتم عمليات دفع حقيقية</p>
-        <h1>الدفع</h1>
-        <p class="pay-amount-label">المبلغ</p>
-        <p class="pay-amount" id="payAmount">0.00 ر.س</p>
-        <div class="pay-methods" role="radiogroup" aria-label="طريقة الدفع">
-          <button type="button" class="pay-method" data-method="apple" aria-pressed="false">
-            <span class="pm-icon"></span>
-            <span>Apple Pay</span>
-          </button>
-          <button type="button" class="pay-method" data-method="mada" aria-pressed="false">
-            <span class="pm-icon">م</span>
-            <span>مدى</span>
-          </button>
-          <button type="button" class="pay-method" data-method="bank" aria-pressed="false">
-            <span class="pm-icon">⇄</span>
-            <span>تحويل بنكي</span>
-          </button>
-        </div>
-        <div id="bankBox" class="bank-box hidden">
-          <label>IBAN</label>
-          <div class="iban-row">
-            <code id="ibanText">SA7836036036009631393655</code>
-            <button type="button" class="btn-copy" id="btnCopyIban">نسخ</button>
-          </div>
-        </div>
-        <div class="double-tap-zone" id="doubleTapZone">
-          <div class="side-btn" aria-hidden="true"></div>
-          <p>اضغط مرتين للدفع</p>
-          <p class="muted tiny">محاكاة واجهة المتجر — بدون خصم حقيقي</p>
-        </div>
-        <button type="button" class="btn-secondary full" id="btnCancelPay">إلغاء</button>
-      </div>
-    </section>
-
-    <!-- Client orders -->
-    <section id="view-myorders" class="view" data-view="myorders">
-      <div class="hero compact">
-        <h1>طلباتي</h1>
-        <p class="hero-sub">خاصة بحسابك في هذه الجلسة فقط</p>
-      </div>
-      <div id="myOrdersList" class="orders-list"></div>
-    </section>
-
-    <!-- 4) Admin -->
-    <section id="view-admin-login" class="view" data-view="admin-login">
-      <div class="admin-gate">
-        <h1>الإدارة</h1>
-        <p class="muted">دخول محمي — للمعاينة فقط</p>
-        <div id="adminLoginSteps">
-          <div class="field" data-admin-step="pass">
-            <label for="adminPass">كلمة المرور</label>
-            <input type="password" id="adminPass" autocomplete="current-password" />
-            <p class="help-once" id="adminPassHelp">للمعاينة: abu-ezz-admin</p>
-          </div>
-          <div class="field hidden" data-admin-step="phone">
-            <label for="adminPhone">رقم الجوال</label>
-            <input type="tel" id="adminPhone" inputmode="numeric" placeholder="5xxxxxxxx" dir="ltr" />
-            <p class="muted tiny">يُقبل الرقم المصرّح فقط</p>
-          </div>
-          <div class="field hidden" data-admin-step="sms">
-            <label for="adminSms">رمز التحقق (محاكاة)</label>
-            <input type="text" id="adminSms" inputmode="numeric" maxlength="6" dir="ltr" />
-            <p class="muted tiny" id="smsHint"></p>
-          </div>
-        </div>
-        <button type="button" class="btn-primary full" id="btnAdminNext">متابعة</button>
-      </div>
-    </section>
-
-    <section id="view-admin" class="view" data-view="admin">
-      <div class="hero compact">
-        <h1>لوحة الإدارة</h1>
-        <p class="hero-sub">أبو عز · تحكم الأتولييه</p>
-      </div>
-      <div class="admin-grid">
-        <button type="button" class="admin-tile" data-admin-panel="designs">إدارة تصميم</button>
-        <button type="button" class="admin-tile" data-admin-panel="add">إضافة تصميم</button>
-        <button type="button" class="admin-tile" data-admin-panel="orders">سجل الطلبات</button>
-        <button type="button" class="admin-tile" data-admin-panel="refresh" id="btnSiteRefresh">تحديث</button>
-      </div>
-
-      <div id="adminPanel" class="admin-panel">
-        <div class="panel hidden" id="panel-designs">
-          <h2>إدارة التصاميم</h2>
-          <div id="adminDesignsList" class="admin-list"></div>
-        </div>
-        <div class="panel hidden" id="panel-add">
-          <h2>إضافة تصميم</h2>
-          <div class="field">
-            <label for="newDesignTitle">عنوان التصميم</label>
-            <input type="text" id="newDesignTitle" />
-          </div>
-          <div class="field">
-            <label for="newDesignDesc">وصف مختصر</label>
-            <textarea id="newDesignDesc" rows="3"></textarea>
-          </div>
-          <div class="field">
-            <label for="newDesignImg">رابط صورة / مسار الأصل</label>
-            <input type="text" id="newDesignImg" placeholder="assets/sample-1.svg" dir="ltr" />
-          </div>
-          <button type="button" class="btn-primary" id="btnAddDesign">حفظ التصميم</button>
-        </div>
-        <div class="panel hidden" id="panel-orders">
-          <h2>سجل الطلبات</h2>
-          <div class="price-controls">
-            <h3>أسعار الخدمات</h3>
-            <div class="field inline">
-              <label for="priceBase">سعر التصميم الأساسي</label>
-              <input type="number" id="priceBase" min="0.001" max="1000" step="0.001" dir="ltr" />
-            </div>
-            <div class="field inline">
-              <label for="priceExtra">سعر الإضافة</label>
-              <input type="number" id="priceExtra" min="0.001" max="1000" step="0.001" dir="ltr" />
-            </div>
-            <button type="button" class="btn-secondary" id="btnSavePrices">حفظ الأسعار</button>
-          </div>
-          <div id="adminOrdersList" class="orders-list"></div>
-        </div>
-      </div>
-
-      <div class="security-panel" id="securityPanel">
-        <h2>حالة الأمان</h2>
-        <ul class="sec-list">
-          <li><span class="dot ok"></span> ملفات غير مسربة</li>
-          <li><span class="dot ok"></span> قاعدة بيانات مؤمّنة <span class="muted tiny">(محاكاة محلية)</span></li>
-          <li><span class="dot ok"></span> تسليس للموقع</li>
-        </ul>
-        <h3>سجل الزوار والأحداث</h3>
-        <p class="stat-line">الدخول: <strong id="statVisits">0</strong> · الأحداث: <strong id="statEvents">0</strong></p>
-        <div id="eventLog" class="event-log"></div>
-        <button type="button" class="btn-secondary" id="btnLogoutAdmin">خروج الإدارة</button>
-      </div>
-    </section>
-  </main>
+  <nav class="bottom-nav" aria-label="التنقل">
+    <a href="#/" data-route="home" class="nav-item">
+      <span class="nav-icon">⌂</span>
+      <span>المعرض</span>
+    </a>
+    <a href="#/order" data-route="order" class="nav-item">
+      <span class="nav-icon">✦</span>
+      <span>طلب</span>
+    </a>
+    <a href="#/orders" data-route="orders" class="nav-item">
+      <span class="nav-icon">☰</span>
+      <span>طلباتي</span>
+    </a>
+    <a href="#/admin" data-route="admin" class="nav-item">
+      <span class="nav-icon">⚙</span>
+      <span>إدارة</span>
+    </a>
+  </nav>
 
   <div id="toast" class="toast hidden" role="status"></div>
-  <script src="app.js" defer></script>
+
+  <script src="app.js"></script>
 </body>
 </html>
