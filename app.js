@@ -17,12 +17,12 @@
   ];
 
   const SAMPLE_GALLERY = [
-    { id: "g1", title: "شعار سيرفر", tag: "جرافيكس", hue: 0 },
-    { id: "g2", title: "بانر ديسكورد", tag: "جرافيكس", hue: 40 },
-    { id: "g3", title: "أيقونة مجتمع", tag: "جرافيكس", hue: 120 },
-    { id: "g4", title: "هوية بصرية", tag: "جرافيكس", hue: 200 },
-    { id: "g5", title: "غلاف قناة", tag: "جرافيكس", hue: 280 },
-    { id: "g6", title: "بطاقة ترحيب", tag: "جرافيكس", hue: 320 }
+    { id: "g1", title: "شعار سيرفر", tag: "جرافيكس", hue: 0, img: "assets/sample-1.svg" },
+    { id: "g2", title: "بانر ديسكورد", tag: "جرافيكس", hue: 40, img: "assets/sample-2.svg" },
+    { id: "g3", title: "أيقونة مجتمع", tag: "جرافيكس", hue: 120, img: "assets/sample-3.svg" },
+    { id: "g4", title: "هوية بصرية", tag: "جرافيكس", hue: 200, img: "assets/sample-4.svg" },
+    { id: "g5", title: "غلاف قناة", tag: "جرافيكس", hue: 280, img: "assets/sample-5.svg" },
+    { id: "g6", title: "بطاقة ترحيب", tag: "جرافيكس", hue: 320, img: "assets/sample-6.svg" }
   ];
 
   function uid(prefix) {
@@ -73,6 +73,14 @@
   if (!state.activityLog) state.activityLog = [];
   if (!state.prices) state.prices = { base: 50, addon: 15, rush: 25 };
   if (!state.designs || !state.designs.length) state.designs = SAMPLE_GALLERY.slice();
+  else {
+    // merge sample images for default gallery ids if missing
+    const byId = Object.fromEntries(SAMPLE_GALLERY.map((x) => [x.id, x]));
+    state.designs = state.designs.map((d) => {
+      if (!d.img && byId[d.id] && byId[d.id].img) return Object.assign({}, d, { img: byId[d.id].img });
+      return d;
+    });
+  }
   if (!state.atelierOrders) state.atelierOrders = [];
 
   function save() {
@@ -159,7 +167,9 @@
         ${designs.map((d, i) => `
           <article class="gallery-card" data-open="${escapeHtml(d.id)}">
             <div class="gallery-thumb">
-              <div class="pattern" style="filter:hue-rotate(${d.hue || i * 40}deg)">عز</div>
+              ${d.img
+                ? `<img src="${escapeHtml(d.img)}" alt="${escapeHtml(d.title)}" loading="lazy" />`
+                : `<div class="pattern" style="filter:hue-rotate(${d.hue || i * 40}deg)">عز</div>`}
             </div>
             <div class="gallery-meta">
               <strong>${escapeHtml(d.title)}</strong>
@@ -404,8 +414,8 @@
           <label class="pay-method"><input type="radio" name="pay" value="mada" /> مدى</label>
           <label class="pay-method"><input type="radio" name="pay" value="bank" /> تحويل بنكي</label>
         </div>
-        <div id="iban-block">
-          <div class="muted" style="text-align:start;font-size:0.85rem">IBAN للتحويل البنكي</div>
+        <div id="iban-block" class="iban-block">
+          <div class="muted" style="text-align:start;font-size:0.85rem;font-weight:700">IBAN للتحويل البنكي</div>
           <div class="iban-box">
             <span dir="ltr" id="iban-text">${IBAN}</span>
             <button type="button" class="copy-btn" id="btn-copy-iban">نسخ</button>
@@ -810,7 +820,8 @@
       add.onclick = () => {
         const title = (document.getElementById("new-design-title").value || "").trim();
         if (!title) { toast("أدخل عنواناً"); return; }
-        state.designs.unshift({ id: uid("g"), title, tag: "جرافيكس", hue: Math.floor(Math.random() * 360) });
+        const n = (state.designs.length % 6) + 1;
+        state.designs.unshift({ id: uid("g"), title, tag: "جرافيكس", hue: Math.floor(Math.random() * 360), img: "assets/sample-" + n + ".svg" });
         logActivity("إضافة تصميم: " + title);
         save();
         toast("تمت الإضافة");

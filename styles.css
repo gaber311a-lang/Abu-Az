@@ -88,9 +88,10 @@ img { max-width: 100%; display: block; }
   display: flex;
   align-items: center;
   gap: 8px;
-  /* Force CTA visually on the left (user: فوق على اليسار) */
+  /* Physical top-left (user: فوق على اليسار) — LTR cluster on the left edge */
   margin-inline-start: auto;
-  flex-direction: row-reverse;
+  direction: ltr;
+  flex-direction: row;
 }
 .cta-btn {
   background: var(--red);
@@ -199,6 +200,12 @@ img { max-width: 100%; display: block; }
   align-items: center;
   justify-content: center;
   position: relative;
+  overflow: hidden;
+}
+.gallery-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 .gallery-thumb .pattern {
   width: 70%;
