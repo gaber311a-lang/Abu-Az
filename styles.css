@@ -4,13 +4,12 @@
    =========================== */
 
 :root {
-  /* لوحة ألوان هادئة */
   --bg: #f7f5f2;
   --bg-soft: #efede9;
   --surface: #ffffff;
   --text: #2c2a26;
   --text-muted: #6b6760;
-  --accent: #5c7a6e;          /* أخضر زيتوني هادئ */
+  --accent: #5c7a6e;
   --accent-soft: #8fa89a;
   --accent-light: #d4e0d9;
   --border: rgba(44, 42, 38, 0.08);
@@ -84,7 +83,6 @@ button, input, select, textarea {
   background: var(--accent-light);
   top: -10%;
   right: -5%;
-  animation-delay: 0s;
 }
 
 .blob-2 {
@@ -144,16 +142,23 @@ button, input, select, textarea {
 }
 
 .logo-mark {
-  width: 38px;
-  height: 38px;
-  background: var(--text);
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, var(--text) 0%, #3d3a35 100%);
   color: var(--bg);
-  border-radius: 10px;
+  border-radius: 50%;
   display: grid;
   place-items: center;
-  font-size: 0.85rem;
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 600;
   letter-spacing: -0.5px;
+  box-shadow: 0 2px 8px rgba(44, 42, 38, 0.15);
+}
+
+.logo-text {
+  font-weight: 600;
+  letter-spacing: -0.3px;
 }
 
 .logo-text em {
@@ -547,70 +552,93 @@ button, input, select, textarea {
 
 .about-card-inner {
   display: flex;
-  gap: 0.3rem;
   font-family: var(--font-display);
-  font-size: 4.5rem;
+  font-size: 5.5rem;
   font-weight: 600;
   color: var(--text);
   z-index: 1;
 }
 
-.about-letter:last-child {
+.about-letter {
   color: var(--accent);
 }
 
-/* ========== Contact ========== */
-.contact-card {
+/* ========== Contact Methods ========== */
+.contact-methods {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
   max-width: 480px;
   margin: 0 auto;
+}
+
+.contact-method {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
   background: var(--surface);
   border-radius: var(--radius);
-  padding: 2.5rem;
-  text-align: center;
+  padding: 1.25rem 1.4rem;
   box-shadow: var(--shadow);
+  transition: all var(--transition);
+  border: 1px solid transparent;
 }
 
-.contact-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.75rem;
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin-bottom: 1.75rem;
-  transition: color var(--transition);
+.contact-method:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover);
+  border-color: var(--accent-light);
 }
 
-.contact-link:hover {
+.contact-method-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.contact-method-icon.discord {
+  background: #5865F2;
+  color: white;
+}
+
+.contact-method-icon.email {
+  background: var(--accent-light);
   color: var(--accent);
 }
 
-.contact-icon {
-  font-size: 1.4rem;
-}
-
-.socials {
+.contact-method-info {
+  flex: 1;
   display: flex;
-  justify-content: center;
-  gap: 0.75rem;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
 }
 
-.social {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  background: var(--bg-soft);
-  display: grid;
-  place-items: center;
-  font-weight: 600;
-  font-size: 0.9rem;
+.contact-method-label {
+  font-size: 0.8rem;
   color: var(--text-muted);
-  transition: all var(--transition);
+  font-weight: 500;
 }
 
-.social:hover {
-  background: var(--accent);
-  color: white;
-  transform: translateY(-3px);
+.contact-method-value {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text);
+  word-break: break-all;
+}
+
+.contact-method-arrow {
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  transition: transform var(--transition), color var(--transition);
+}
+
+.contact-method:hover .contact-method-arrow {
+  color: var(--accent);
+  transform: translateX(-4px);
 }
 
 /* ========== Footer ========== */
@@ -789,6 +817,10 @@ button, input, select, textarea {
   gap: 1rem;
 }
 
+.admin-dashboard {
+  display: none;
+}
+
 .admin-hint {
   color: var(--text-muted);
   font-size: 0.95rem;
@@ -804,18 +836,6 @@ button, input, select, textarea {
 .admin-error {
   color: #c45c5c;
   font-size: 0.9rem;
-}
-
-.admin-note {
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  margin-top: 0.5rem;
-}
-
-.admin-note code {
-  background: var(--bg-soft);
-  padding: 0.15rem 0.4rem;
-  border-radius: 4px;
 }
 
 .admin-tabs {
@@ -932,7 +952,7 @@ button, input, select, textarea {
   background: #ecc8c8;
 }
 
-/* ========== Animations on scroll ========== */
+/* ========== Animations ========== */
 .fade-up {
   opacity: 0;
   transform: translateY(28px);
@@ -950,7 +970,6 @@ button, input, select, textarea {
     grid-template-columns: 1fr;
     gap: 3rem;
   }
-
   .about-visual {
     order: -1;
   }
@@ -973,24 +992,19 @@ button, input, select, textarea {
     transition: transform var(--transition);
     z-index: 99;
   }
-
   .nav.open {
     transform: translateX(0);
   }
-
   .menu-toggle {
     display: flex;
     z-index: 101;
   }
-
   .hero {
     padding-top: 7rem;
   }
-
   .projects-grid {
     grid-template-columns: 1fr;
   }
-
   .footer-inner {
     flex-direction: column;
     text-align: center;
@@ -1001,7 +1015,6 @@ button, input, select, textarea {
   .hero-actions {
     flex-direction: column;
   }
-
   .btn {
     width: 100%;
   }
