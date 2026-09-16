@@ -2,12 +2,57 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <meta http-equiv="refresh" content="0; url=./docs/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#E31C23" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <title>موقع أبو عز</title>
-  <link rel="canonical" href="https://gaber311a-lang.github.io/Abu-Az/" />
-  <script>location.replace('./docs/');</script>
+  <link rel="icon" type="image/jpeg" href="assets/logo-abu-ezz.jpg" />
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <p><a href="./docs/">موقع أبو عز</a></p>
+  <div id="maintenance-overlay" class="maintenance-overlay hidden" aria-hidden="true">
+    <div class="maintenance-card">
+      <div class="spinner"></div>
+      <p>الموقع قيد التحديث…</p>
+      <p class="muted">يرجى الانتظار قليلاً</p>
+    </div>
+  </div>
+
+  <header class="app-header" id="app-header">
+    <a href="#/" class="brand" aria-label="موقع أبو عز — الرئيسية">
+      <img src="assets/logo-abu-ezz.jpg" alt="أبُو عز" class="brand-logo" width="120" height="48" />
+      <span class="brand-title">موقع أبو عز</span>
+    </a>
+    <div class="header-actions">
+      <a href="#/orders" class="link-btn" id="btn-my-orders">طلباتي</a>
+      <a href="#/order" class="cta-btn" id="btn-order-design">اطلب تصميم</a>
+    </div>
+  </header>
+
+  <main id="app" class="app-main" role="main"></main>
+
+  <nav class="bottom-nav" aria-label="التنقل">
+    <a href="#/" data-route="home" class="nav-item">
+      <span class="nav-icon">⌂</span>
+      <span>المعرض</span>
+    </a>
+    <a href="#/order" data-route="order" class="nav-item">
+      <span class="nav-icon">✦</span>
+      <span>طلب</span>
+    </a>
+    <a href="#/orders" data-route="orders" class="nav-item">
+      <span class="nav-icon">☰</span>
+      <span>طلباتي</span>
+    </a>
+    <a href="#/admin" data-route="admin" class="nav-item">
+      <span class="nav-icon">⚙</span>
+      <span>إدارة</span>
+    </a>
+  </nav>
+
+  <div id="toast" class="toast hidden" role="status"></div>
+
+  <script src="app.js"></script>
 </body>
 </html>

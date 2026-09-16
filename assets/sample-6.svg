@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" fill="none">
+  <rect width="800" height="1000" fill="#0d0d0d"/>
+  <rect x="60" y="120" width="680" height="2" fill="#E42C23"/>
+  <text x="100" y="280" fill="#fff" font-family="Arial" font-size="56" font-weight="700">TYPO</text>
+  <text x="100" y="360" fill="#E42C23" font-family="Arial" font-size="56" font-weight="700">GRID</text>
+  <text x="100" y="440" fill="#888" font-family="Arial" font-size="28">SYSTEM 01</text>
+  <rect x="60" y="880" width="680" height="2" fill="#333"/>
+</svg>
