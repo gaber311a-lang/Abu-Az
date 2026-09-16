@@ -514,10 +514,10 @@
 
       <div class="security-panel">
         <h3>حالة الأمان <span class="demo-badge">معاينة</span></h3>
-        <div class="ok">● ملفات غير مسربة</div>
-        <div class="ok">● قاعدة بيانات مؤمّنة <span class="muted">(محاكاة محلية)</span></div>
-        <div class="ok">● تسليس للموقع</div>
-        <div class="warn">● التخزين التجريبي: localStorage</div>
+        <div class="ok">● لا أسرار إنتاجية في الواجهة</div>
+        <div class="ok">● طلبات العملاء مفلترة حسب الجلسة/البريد</div>
+        <div class="ok">● نموذج بيانات جاهز لـ backend لاحقاً</div>
+        <div class="warn">● معاينة: التخزين localStorage — ليس أمان إنتاج</div>
         <div>الزوار (عداد محلي): <strong>${state.visitorCount}</strong> · أحداث: <strong>${(state.activityLog||[]).length}</strong></div>
         <div class="log-list">
           ${(state.activityLog || []).slice(0, 12).map((l) =>
@@ -589,6 +589,30 @@
   function bindViewEvents(route) {
     const backHome = document.getElementById("btn-back-home");
     if (backHome) backHome.onclick = () => { location.hash = "#/"; };
+
+    if (route === "home" || route === "" || !route) {
+      document.querySelectorAll("[data-open]").forEach((card) => {
+        card.onclick = () => {
+          const id = card.getAttribute("data-open");
+          const d = (state.designs || []).find((x) => x.id === id);
+          if (!d) return;
+          const app = document.getElementById("app");
+          app.innerHTML = `
+            <div class="back-row"><button type="button" class="back-btn" id="btn-back-home">← المعرض</button></div>
+            <div class="card" style="padding:0;overflow:hidden">
+              <div class="gallery-thumb" style="aspect-ratio:16/10;border-radius:0">
+                ${d.img ? `<img src="${escapeHtml(d.img)}" alt="${escapeHtml(d.title)}" />` : `<div class="pattern">عز</div>`}
+              </div>
+              <div style="padding:16px">
+                <h2 class="page-title" style="font-size:1.15rem">${escapeHtml(d.title)}</h2>
+                <p class="muted">${escapeHtml(d.tag || "جرافيكس ديزاين فقط")}</p>
+                <a href="#/order" class="btn btn-primary" style="margin-top:8px">اطلب تصميم مشابه</a>
+              </div>
+            </div>`;
+          document.getElementById("btn-back-home").onclick = () => { location.hash = "#/"; render(); };
+        };
+      });
+    }
 
     if (route === "order") bindOrderEvents();
     if (route === "pay") bindPayEvents();
@@ -699,13 +723,20 @@
     const back = document.getElementById("btn-back-order");
     if (back) back.onclick = () => { location.hash = "#/order"; };
 
+    function syncIbanVisibility() {
+      const method = (document.querySelector('input[name="pay"]:checked') || {}).value;
+      const block = document.getElementById("iban-block");
+      if (block) block.style.opacity = method === "bank" ? "1" : "0.55";
+    }
     document.querySelectorAll("#pay-methods .pay-method").forEach((lab) => {
       lab.addEventListener("click", () => {
         document.querySelectorAll("#pay-methods .pay-method").forEach((x) => x.classList.remove("selected"));
         lab.classList.add("selected");
         lab.querySelector("input").checked = true;
+        syncIbanVisibility();
       });
     });
+    syncIbanVisibility();
 
     const copy = document.getElementById("btn-copy-iban");
     if (copy) {
