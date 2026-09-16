@@ -1,8 +1,8 @@
 /* موقع أبو عز — mobile-first RTL */
 :root {
-  --red: #E31C23;
-  --red-dark: #c4161c;
-  --red-soft: rgba(227, 28, 35, 0.08);
+  --red: #E42C23;
+  --red-dark: #c71f18;
+  --red-soft: rgba(228, 44, 35, 0.08);
   --bg: #f7f7f8;
   --surface: #ffffff;
   --text: #1a1a1a;
@@ -88,10 +88,9 @@ img { max-width: 100%; display: block; }
   display: flex;
   align-items: center;
   gap: 8px;
-  /* Physical top-left (user: فوق على اليسار) — LTR cluster on the left edge */
+  /* Force CTA visually on the left (user: فوق على اليسار) */
   margin-inline-start: auto;
-  direction: ltr;
-  flex-direction: row;
+  /* RTL: first child on the right of this group; CTA (second) sits visual left */
 }
 .cta-btn {
   background: var(--red);
@@ -101,7 +100,7 @@ img { max-width: 100%; display: block; }
   padding: 8px 14px;
   font-weight: 700;
   font-size: 0.85rem;
-  box-shadow: 0 4px 14px rgba(227, 28, 35, 0.35);
+  box-shadow: 0 4px 14px rgba(228, 44, 35, 0.35);
   white-space: nowrap;
 }
 .cta-btn:active { background: var(--red-dark); transform: scale(0.98); }
@@ -194,8 +193,8 @@ img { max-width: 100%; display: block; }
 }
 .gallery-card:active { transform: scale(0.98); }
 .gallery-thumb {
-  aspect-ratio: 1;
-  background: linear-gradient(145deg, #fafafa, #f0f0f2);
+  aspect-ratio: 4 / 5;
+  background: #0a0a0a;
   display: flex;
   align-items: center;
   justify-content: center;

@@ -8,21 +8,30 @@
   const IBAN = "SA7836036036009631393655";
   const ADMIN_PHONE = "502299827";
   const DEMO_OTP = "000000";
+
+  // Demo admin gate — password shown once in login help only (not a production secret)
+  function djb2(str) {
+    let h = 5381;
+    for (let i = 0; i < str.length; i++) h = ((h << 5) + h) + str.charCodeAt(i);
+    return (h >>> 0).toString(16);
+  }
+  const ADMIN_PASS_HASH = "922724f9"; // demo gate hash — hint shown once in UI
+
   const STORAGE_KEY = "abuaz_v1";
 
   const DEFAULT_PALETTE = [
-    "#E31C23", "#111111", "#FFFFFF", "#F5F5F5", "#1E88E5",
+    "#E42C23", "#111111", "#FFFFFF", "#F5F5F5", "#1E88E5",
     "#43A047", "#FB8C00", "#8E24AA", "#00ACC1", "#FDD835",
     "#6D4C41", "#EC407A", "#5C6BC0", "#26A69A", "#EF5350"
   ];
 
   const SAMPLE_GALLERY = [
-    { id: "g1", title: "شعار سيرفر", tag: "جرافيكس", hue: 0, img: "assets/sample-1.svg" },
-    { id: "g2", title: "بانر ديسكورد", tag: "جرافيكس", hue: 40, img: "assets/sample-2.svg" },
-    { id: "g3", title: "أيقونة مجتمع", tag: "جرافيكس", hue: 120, img: "assets/sample-3.svg" },
-    { id: "g4", title: "هوية بصرية", tag: "جرافيكس", hue: 200, img: "assets/sample-4.svg" },
-    { id: "g5", title: "غلاف قناة", tag: "جرافيكس", hue: 280, img: "assets/sample-5.svg" },
-    { id: "g6", title: "بطاقة ترحيب", tag: "جرافيكس", hue: 320, img: "assets/sample-6.svg" }
+    { id: "g1", title: "شعار سيرفر", tag: "جرافيكس", img: "assets/sample-1.svg" },
+    { id: "g2", title: "بانر مجتمع", tag: "جرافيكس", img: "assets/sample-2.svg" },
+    { id: "g3", title: "أيقونة مجتمع", tag: "جرافيكس", img: "assets/sample-3.svg" },
+    { id: "g4", title: "هوية بصرية", tag: "جرافيكس", img: "assets/sample-4.svg" },
+    { id: "g5", title: "غلاف قناة", tag: "جرافيكس", img: "assets/sample-5.svg" },
+    { id: "g6", title: "بطاقة ترحيب", tag: "جرافيكس", img: "assets/sample-6.svg" }
   ];
 
   function uid(prefix) {
@@ -73,14 +82,6 @@
   if (!state.activityLog) state.activityLog = [];
   if (!state.prices) state.prices = { base: 50, addon: 15, rush: 25 };
   if (!state.designs || !state.designs.length) state.designs = SAMPLE_GALLERY.slice();
-  else {
-    // merge sample images for default gallery ids if missing
-    const byId = Object.fromEntries(SAMPLE_GALLERY.map((x) => [x.id, x]));
-    state.designs = state.designs.map((d) => {
-      if (!d.img && byId[d.id] && byId[d.id].img) return Object.assign({}, d, { img: byId[d.id].img });
-      return d;
-    });
-  }
   if (!state.atelierOrders) state.atelierOrders = [];
 
   function save() {
@@ -155,7 +156,7 @@
     const designs = state.designs;
     return `
       <section class="hero-banner">
-        <img src="assets/logo-abu-ezz.jpg" alt="أبُو عز" />
+        <img src="assets/logo-abu-ezz.jpg" alt="أبو عز" />
         <h1 class="page-title">موقع أبو عز</h1>
         <p>تصاميم جرافيكس نظيفة ومنظّمة — اطلب تصميمك بسهولة</p>
       </section>
@@ -194,6 +195,7 @@
         google: !!(state.user && state.user.google),
         photo: (state.user && state.user.photo) || null,
         displayName: (state.user && state.user.name) || "",
+        serverName: "",
         discord: "",
         designName: "",
         designType: "جرافيكس ديزاين فقط",
@@ -217,7 +219,7 @@
     const titles = {
       1: "تسجيل الدخول",
       2: "البريد والجوال",
-      3: "ديسكورد (اختياري)",
+      3: "اسم السيرفر (اختياري)",
       4: "اسم التصميم / السيرفر",
       5: "نوع التصميم",
       6: "الألوان",
@@ -268,8 +270,8 @@
     } else if (step === 3) {
       body = `
         <div class="form-group">
-          <label>نحو اسم السيرفر <span class="hint">(اختياري — ديسكورد)</span></label>
-          <input class="input" id="f-discord" placeholder="اسم السيرفر أو الديسكورد" value="${escapeHtml(d.discord || "")}" />
+          <label>اسم السيرفر <span class="hint">(اختياري)</span></label>
+          <input class="input" id="f-server" placeholder="مثال: سيرفر أبو عز" value="${escapeHtml(d.serverName || d.discord || "")}" />
         </div>
         <div class="row-btns">
           <button type="button" class="btn btn-secondary" id="step-prev">رجوع</button>
@@ -414,8 +416,8 @@
           <label class="pay-method"><input type="radio" name="pay" value="mada" /> مدى</label>
           <label class="pay-method"><input type="radio" name="pay" value="bank" /> تحويل بنكي</label>
         </div>
-        <div id="iban-block" class="iban-block">
-          <div class="muted" style="text-align:start;font-size:0.85rem;font-weight:700">IBAN للتحويل البنكي</div>
+        <div id="iban-block">
+          <div class="muted" style="text-align:start;font-size:0.85rem">IBAN للتحويل البنكي</div>
           <div class="iban-box">
             <span dir="ltr" id="iban-text">${IBAN}</span>
             <button type="button" class="copy-btn" id="btn-copy-iban">نسخ</button>
@@ -612,7 +614,7 @@
         d.displayName = email.split("@")[0].replace(/[._]/g, " ") || "مستخدم Google";
         // placeholder avatar (SVG data URI — no external fetch)
         d.photo = "data:image/svg+xml," + encodeURIComponent(
-          `<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><rect fill="#E31C23" width="80" height="80"/><text x="40" y="48" text-anchor="middle" fill="#fff" font-size="28" font-family="sans-serif">${(d.displayName || "G").charAt(0)}</text></svg>`
+          `<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><rect fill="#E42C23" width="80" height="80"/><text x="40" y="48" text-anchor="middle" fill="#fff" font-size="28" font-family="sans-serif">${(d.displayName || "G").charAt(0)}</text></svg>`
         );
         state.user = {
           email: d.email,
@@ -662,8 +664,9 @@
           state.user = Object.assign({}, state.user || {}, { email: d.email, phone: d.phone, google: d.google, name: d.displayName, photo: d.photo });
         }
         if (step === 3) {
-          const el = document.getElementById("f-discord");
-          d.discord = el ? el.value.trim() : "";
+          const el = document.getElementById("f-server") || document.getElementById("f-discord");
+          d.serverName = el ? el.value.trim() : "";
+          d.discord = d.serverName; // توافق خلفي
         }
         if (step === 4) {
           d.designName = (document.getElementById("f-design-name").value || "").trim();
@@ -727,7 +730,8 @@
           sessionId: state.sessionId,
           email: d.email,
           phone: d.phone,
-          discord: d.discord || "",
+          serverName: d.serverName || d.discord || "",
+          discord: d.serverName || d.discord || "",
           designName: d.designName,
           designType: d.designType,
           colors: (d.colors || []).slice(),
@@ -749,6 +753,7 @@
           google: d.google,
           photo: d.photo,
           displayName: d.displayName,
+          serverName: "",
           discord: "",
           designName: "",
           designType: "جرافيكس ديزاين فقط",
@@ -769,7 +774,7 @@
     if (passNext) {
       passNext.onclick = () => {
         const p = (document.getElementById("admin-pass").value || "").trim();
-        if (p !== "abu-ezz-admin") { toast("كلمة المرور غير صحيحة"); return; }
+        if (djb2(p) !== ADMIN_PASS_HASH) { toast("كلمة المرور غير صحيحة"); return; }
         state._adminPhase = 2;
         state._adminHelpShown = true;
         logActivity("محاولة دخول إدارة — خطوة الجوال");
@@ -821,7 +826,7 @@
         const title = (document.getElementById("new-design-title").value || "").trim();
         if (!title) { toast("أدخل عنواناً"); return; }
         const n = (state.designs.length % 6) + 1;
-        state.designs.unshift({ id: uid("g"), title, tag: "جرافيكس", hue: Math.floor(Math.random() * 360), img: "assets/sample-" + n + ".svg" });
+        state.designs.unshift({ id: uid("g"), title, tag: "جرافيكس", img: "assets/sample-" + n + ".svg", hue: Math.floor(Math.random() * 360) });
         logActivity("إضافة تصميم: " + title);
         save();
         toast("تمت الإضافة");

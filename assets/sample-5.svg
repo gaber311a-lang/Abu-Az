@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" fill="none">
-  <rect width="800" height="1000" fill="#fafafa"/>
-  <circle cx="280" cy="360" r="140" fill="#E42C23" opacity="0.9"/>
-  <circle cx="480" cy="420" r="160" fill="#1a1a1a" opacity="0.85"/>
-  <text x="400" y="780" text-anchor="middle" fill="#1a1a1a" font-family="Arial" font-size="42" font-weight="700">BRAND PACK</text>
-  <text x="400" y="840" text-anchor="middle" fill="#E42C23" font-family="Arial" font-size="20">GRAPHICS ONLY</text>
-</svg>
