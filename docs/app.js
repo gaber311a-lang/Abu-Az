@@ -1,6 +1,6 @@
 /**
- * موقع أبو عز — SPA (معاينة محلية / localStorage)
- * نموذج بيانات نظيف لمستقبل backend — لا ادّعاء أمان إنتاجي.
+ * موقع أبو عز — SPA (معاينة / localStorage)
+ * هوية: أحمر #E42C23 على أبيض — بدون تخطيط Pinterest
  */
 (function () {
   "use strict";
@@ -9,13 +9,12 @@
   const ADMIN_PHONE = "502299827";
   const DEMO_OTP = "000000";
 
-  // Demo admin gate — password shown once in login help only (not a production secret)
   function djb2(str) {
     let h = 5381;
     for (let i = 0; i < str.length; i++) h = ((h << 5) + h) + str.charCodeAt(i);
     return (h >>> 0).toString(16);
   }
-  const ADMIN_PASS_HASH = "922724f9"; // demo gate hash — hint shown once in UI
+  const ADMIN_PASS_HASH = "922724f9"; // demo gate — hint shown once in UI
 
   const STORAGE_KEY = "abuaz_v1";
 
@@ -55,14 +54,10 @@
       sessionId: uid("sess"),
       visitorCount: 1,
       activityLog: [{ t: nowISO(), msg: "زيارة جديدة (معاينة)" }],
-      prices: {
-        base: 50,
-        addon: 15,
-        rush: 25
-      },
+      prices: { base: 50, addon: 15, rush: 25 },
       designs: SAMPLE_GALLERY.slice(),
-      atelierOrders: [], // سجل الطلبات الكامل (إدارة)
-      user: null, // { email, phone, google, name, photo }
+      atelierOrders: [],
+      user: null,
       draft: null,
       adminAuthed: false
     };
@@ -71,13 +66,10 @@
   let state = loadState() || defaultState();
   if (!state.sessionId) state.sessionId = uid("sess");
   if (!state.visitorCount) state.visitorCount = 1;
-  else {
-    // bump visitor on fresh load once per tab session
-    if (!sessionStorage.getItem("abuaz_visit")) {
-      state.visitorCount += 1;
-      sessionStorage.setItem("abuaz_visit", "1");
-      logActivity("زيارة جديدة (معاينة)");
-    }
+  else if (!sessionStorage.getItem("abuaz_visit")) {
+    state.visitorCount += 1;
+    sessionStorage.setItem("abuaz_visit", "1");
+    logActivity("زيارة جديدة (معاينة)");
   }
   if (!state.activityLog) state.activityLog = [];
   if (!state.prices) state.prices = { base: 50, addon: 15, rush: 25 };
@@ -139,7 +131,10 @@
   function setActiveNav(route) {
     document.querySelectorAll(".bottom-nav .nav-item").forEach((a) => {
       const r = a.getAttribute("data-route");
-      a.classList.toggle("active", r === route || (route === "pay" && r === "order") || (route === "home" && r === "home"));
+      a.classList.toggle(
+        "active",
+        r === route || (route === "pay" && r === "order") || (route === "home" && r === "home")
+      );
     });
   }
 
@@ -155,22 +150,27 @@
   function viewHome() {
     const designs = state.designs;
     return `
-      <section class="hero-banner">
-        <img src="assets/logo-abu-ezz.jpg" alt="أبو عز" />
+      <section class="hero">
+        <img class="hero-logo" src="assets/logo-abu-ezz.jpg" alt="أبو عز" />
         <h1 class="page-title">موقع أبو عز</h1>
-        <p>تصاميم جرافيكس نظيفة ومنظّمة — اطلب تصميمك بسهولة</p>
+        <p>تصاميم جرافيكس نظيفة واحترافية — اطلب تصميمك بخطوات واضحة</p>
+        <div class="hero-cta">
+          <a href="#/order" class="btn btn-primary">اطلب تصميم</a>
+        </div>
       </section>
-      <div class="back-row" style="justify-content:space-between">
-        <h2 class="page-title" style="font-size:1.1rem;margin:0">المعرض</h2>
+
+      <div class="section-head">
+        <h2>أعمال مختارة</h2>
         <a href="#/orders" class="link-btn">طلباتي</a>
       </div>
+
       <div class="gallery-grid">
         ${designs.map((d, i) => `
-          <article class="gallery-card" data-open="${escapeHtml(d.id)}">
+          <article class="gallery-card" data-open="${escapeHtml(d.id)}" role="button" tabindex="0">
             <div class="gallery-thumb">
               ${d.img
                 ? `<img src="${escapeHtml(d.img)}" alt="${escapeHtml(d.title)}" loading="lazy" />`
-                : `<div class="pattern" style="filter:hue-rotate(${d.hue || i * 40}deg)">عز</div>`}
+                : `<div class="pattern">عز</div>`}
             </div>
             <div class="gallery-meta">
               <strong>${escapeHtml(d.title)}</strong>
@@ -178,10 +178,6 @@
             </div>
           </article>
         `).join("")}
-      </div>
-      <div class="card" style="margin-top:16px;text-align:center">
-        <p class="muted" style="margin:0 0 12px">جاهز لطلب تصميم جديد؟</p>
-        <a href="#/order" class="btn btn-primary">اطلب تصميم</a>
       </div>
     `;
   }
@@ -235,7 +231,7 @@
         <div class="notice demo">معاينة: تسجيل الدخول تجريبي عبر الواجهة فقط — بدون خادم حقيقي.</div>
         <div class="form-group">
           <label>البريد الإلكتروني</label>
-          <input class="input" type="email" id="f-email" dir="ltr" placeholder="name@email.com" value="${escapeHtml(d.email)}" />
+          <input class="input" type="email" id="f-email" dir="ltr" placeholder="name@email.com" value="${escapeHtml(d.email)}" autocomplete="email" />
         </div>
         <button type="button" class="btn btn-google" id="btn-google">
           <span class="g-icon"></span> المتابعة مع Google
@@ -256,11 +252,11 @@
       body = `
         <div class="form-group">
           <label>البريد الإلكتروني</label>
-          <input class="input" type="email" id="f-email" dir="ltr" value="${escapeHtml(d.email)}" />
+          <input class="input" type="email" id="f-email" dir="ltr" value="${escapeHtml(d.email)}" autocomplete="email" />
         </div>
         <div class="form-group">
           <label>رقم الجوال <span class="hint">(سعودي مفضّل)</span></label>
-          <input class="input" type="tel" id="f-phone" dir="ltr" placeholder="05xxxxxxxx" value="${escapeHtml(d.phone)}" />
+          <input class="input" type="tel" id="f-phone" dir="ltr" placeholder="05xxxxxxxx" value="${escapeHtml(d.phone)}" autocomplete="tel" />
         </div>
         <div class="row-btns">
           <button type="button" class="btn btn-secondary" id="step-prev">رجوع</button>
@@ -335,7 +331,7 @@
           <label>إضافات للتصميم</label>
           ${opts.map((o) => `
             <label style="display:flex;align-items:center;gap:8px;font-weight:500;margin:8px 0">
-              <input type="checkbox" class="addon-cb" value="${escapeHtml(o)}" ${(d.addons || []).includes(o) ? "checked" : ""} />
+              <input type="checkbox" class="addon-cb" value="${escapeHtml(o)}" ${(d.addons || []).includes(o) ? "checked" : ""} style="accent-color:#E42C23" />
               ${escapeHtml(o)}
             </label>
           `).join("")}
@@ -363,24 +359,21 @@
           <button type="button" class="btn btn-primary" id="step-next">متابعة للدفع</button>
         </div>
       `;
+    } else if (!draftComplete(d)) {
+      body = `
+        <div class="notice">أكمل الحقول المطلوبة أولاً قبل الدفع.</div>
+        <button type="button" class="btn btn-secondary" id="step-prev">رجوع</button>
+      `;
     } else {
-      // step 10 — unlock pay only if complete
-      if (!draftComplete(d)) {
-        body = `
-          <div class="notice">أكمل الحقول المطلوبة أولاً قبل الدفع.</div>
-          <button type="button" class="btn btn-secondary" id="step-prev">رجوع</button>
-        `;
-      } else {
-        body = `
-          <div class="notice demo">جاهز للدفع — معاينة محلية.</div>
-          <div class="price-box" style="margin-bottom:14px">
-            <div class="amount">${formatMoney(calcPrice(d))}</div>
-          </div>
-          <a href="#/pay" class="btn btn-primary">الذهاب للدفع</a>
-          <div style="height:10px"></div>
-          <button type="button" class="btn btn-secondary" id="step-prev">رجوع</button>
-        `;
-      }
+      body = `
+        <div class="notice demo">جاهز للدفع — معاينة محلية.</div>
+        <div class="price-box" style="margin-bottom:14px">
+          <div class="amount">${formatMoney(calcPrice(d))}</div>
+        </div>
+        <a href="#/pay" class="btn btn-primary">الذهاب للدفع</a>
+        <div style="height:10px"></div>
+        <button type="button" class="btn btn-secondary" id="step-prev">رجوع</button>
+      `;
     }
 
     return `
@@ -423,7 +416,7 @@
             <button type="button" class="copy-btn" id="btn-copy-iban">نسخ</button>
           </div>
         </div>
-        <div class="notice demo" style="margin-top:14px;text-align:start">معاينة: لا يتم خصم حقيقي. بعد التأكيد يُنشأ الطلب في سجل الأتيليه ويظهر لك فقط تحت «طلباتي».</div>
+        <div class="notice demo" style="margin-top:14px;text-align:start">معاينة: لا يتم خصم حقيقي. بعد التأكيد يُنشأ الطلب ويظهر لك تحت «طلباتي».</div>
         <button type="button" class="btn btn-primary" id="btn-confirm-pay" style="margin-top:12px">تأكيد الدفع</button>
       </div>
     `;
@@ -441,8 +434,8 @@
     const list = myOrders();
     return `
       <div class="back-row"><button type="button" class="back-btn" id="btn-back-home">← الرئيسية</button></div>
-      <h1 class="page-title">قائمة الطلبات</h1>
-      <p class="page-sub">طلباتي — جلستك فقط <span class="demo-badge">معاينة</span></p>
+      <h1 class="page-title">طلباتي</h1>
+      <p class="page-sub">جلستك فقط <span class="demo-badge">معاينة</span></p>
       ${list.length === 0 ? `
         <div class="empty-state card">
           <p>لا توجد طلبات بعد.</p>
@@ -462,18 +455,16 @@
   }
 
   function viewAdmin() {
-    if (!state.adminAuthed) {
-      return viewAdminLogin();
-    }
+    if (!state.adminAuthed) return viewAdminLogin();
     const orders = state.atelierOrders || [];
     return `
       <h1 class="page-title">الإدارة</h1>
       <p class="page-sub">لوحة معاينة محلية</p>
       <div class="admin-grid">
-        <button type="button" class="admin-tile" id="admin-manage-design"><span>🎨</span>إدارة تصميم</button>
-        <button type="button" class="admin-tile" id="admin-add-design"><span>＋</span>إضافة تصميم</button>
-        <button type="button" class="admin-tile" id="admin-orders-focus"><span>📋</span>سجل الطلبات</button>
-        <button type="button" class="admin-tile" id="admin-refresh"><span>⟳</span>تحديث</button>
+        <button type="button" class="admin-tile" id="admin-manage-design"><span class="tile-icon">◇</span>إدارة تصميم</button>
+        <button type="button" class="admin-tile" id="admin-add-design"><span class="tile-icon">＋</span>إضافة تصميم</button>
+        <button type="button" class="admin-tile" id="admin-orders-focus"><span class="tile-icon">☰</span>سجل الطلبات</button>
+        <button type="button" class="admin-tile" id="admin-refresh"><span class="tile-icon">⟳</span>تحديث</button>
       </div>
 
       <div class="card" id="admin-designs-panel">
@@ -485,7 +476,7 @@
         <button type="button" class="btn btn-primary" id="btn-add-design">إضافة للمعرض</button>
         <div style="margin-top:12px">
           ${(state.designs || []).map((d) => `
-            <div class="order-item" style="display:flex;justify-content:space-between;align-items:center">
+            <div class="order-item" style="display:flex;justify-content:space-between;align-items:center;gap:8px">
               <span>${escapeHtml(d.title)}</span>
               <button type="button" class="copy-btn" style="background:#444" data-del-design="${escapeHtml(d.id)}">حذف</button>
             </div>
@@ -518,13 +509,13 @@
         <div class="ok">● قاعدة بيانات مؤمّنة <span class="muted">(محاكاة محلية)</span></div>
         <div class="ok">● تسليس للموقع</div>
         <div class="warn">● معاينة: التخزين localStorage — ليس أمان إنتاج</div>
-        <div>الزوار (عداد محلي): <strong>${state.visitorCount}</strong> · أحداث: <strong>${(state.activityLog||[]).length}</strong></div>
+        <div>الزوار (عداد محلي): <strong>${state.visitorCount}</strong> · أحداث: <strong>${(state.activityLog || []).length}</strong></div>
         <div class="log-list">
           ${(state.activityLog || []).slice(0, 12).map((l) =>
             `<div dir="ltr">${escapeHtml((l.t || "").slice(0, 19))} — ${escapeHtml(l.msg)}</div>`
           ).join("")}
         </div>
-        <button type="button" class="btn btn-secondary" id="btn-admin-logout" style="margin-top:12px;background:#334155;color:#fff;border:none">تسجيل خروج الإدارة</button>
+        <button type="button" class="btn btn-secondary" id="btn-admin-logout" style="margin-top:12px;background:#333;color:#fff;border:none">تسجيل خروج الإدارة</button>
       </div>
     `;
   }
@@ -553,7 +544,7 @@
           <div class="form-group">
             <label>رمز SMS التجريبي</label>
             <p class="muted">استخدم الرمز: <strong dir="ltr">${DEMO_OTP}</strong></p>
-            <input class="input" type="text" id="admin-otp" dir="ltr" maxlength="6" placeholder="000000" />
+            <input class="input" type="text" id="admin-otp" dir="ltr" maxlength="6" placeholder="000000" inputmode="numeric" />
           </div>
           <button type="button" class="btn btn-primary" id="admin-otp-next">دخول</button>
         `}
@@ -592,7 +583,7 @@
 
     if (route === "home" || route === "" || !route) {
       document.querySelectorAll("[data-open]").forEach((card) => {
-        card.onclick = () => {
+        const open = () => {
           const id = card.getAttribute("data-open");
           const d = (state.designs || []).find((x) => x.id === id);
           if (!d) return;
@@ -600,16 +591,20 @@
           app.innerHTML = `
             <div class="back-row"><button type="button" class="back-btn" id="btn-back-home">← المعرض</button></div>
             <div class="card" style="padding:0;overflow:hidden">
-              <div class="gallery-thumb" style="aspect-ratio:16/10;border-radius:0">
-                ${d.img ? `<img src="${escapeHtml(d.img)}" alt="${escapeHtml(d.title)}" />` : `<div class="pattern">عز</div>`}
+              <div class="detail-thumb">
+                ${d.img ? `<img src="${escapeHtml(d.img)}" alt="${escapeHtml(d.title)}" />` : `<div class="pattern" style="margin:auto;width:40%;height:40%;display:flex;align-items:center;justify-content:center;color:#E42C23;font-weight:800;font-size:1.5rem">عز</div>`}
               </div>
-              <div style="padding:16px">
+              <div style="padding:18px">
                 <h2 class="page-title" style="font-size:1.15rem">${escapeHtml(d.title)}</h2>
                 <p class="muted">${escapeHtml(d.tag || "جرافيكس ديزاين فقط")}</p>
                 <a href="#/order" class="btn btn-primary" style="margin-top:8px">اطلب تصميم مشابه</a>
               </div>
             </div>`;
           document.getElementById("btn-back-home").onclick = () => { location.hash = "#/"; render(); };
+        };
+        card.onclick = open;
+        card.onkeydown = (e) => {
+          if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(); }
         };
       });
     }
@@ -636,7 +631,6 @@
         d.google = true;
         d.email = email;
         d.displayName = email.split("@")[0].replace(/[._]/g, " ") || "مستخدم Google";
-        // placeholder avatar (SVG data URI — no external fetch)
         d.photo = "data:image/svg+xml," + encodeURIComponent(
           `<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><rect fill="#E42C23" width="80" height="80"/><text x="40" y="48" text-anchor="middle" fill="#fff" font-size="28" font-family="sans-serif">${(d.displayName || "G").charAt(0)}</text></svg>`
         );
@@ -685,20 +679,20 @@
           d.email = (document.getElementById("f-email").value || "").trim();
           d.phone = (document.getElementById("f-phone").value || "").trim();
           if (!d.email || !d.phone) { toast("البريد والجوال مطلوبان"); return; }
-          state.user = Object.assign({}, state.user || {}, { email: d.email, phone: d.phone, google: d.google, name: d.displayName, photo: d.photo });
+          state.user = Object.assign({}, state.user || {}, {
+            email: d.email, phone: d.phone, google: d.google, name: d.displayName, photo: d.photo
+          });
         }
         if (step === 3) {
           const el = document.getElementById("f-server") || document.getElementById("f-discord");
           d.serverName = el ? el.value.trim() : "";
-          d.discord = d.serverName; // توافق خلفي
+          d.discord = d.serverName;
         }
         if (step === 4) {
           d.designName = (document.getElementById("f-design-name").value || "").trim();
           if (!d.designName) { toast("أدخل اسم التصميم"); return; }
         }
-        if (step === 5) {
-          d.designType = "جرافيكس ديزاين فقط";
-        }
+        if (step === 5) d.designType = "جرافيكس ديزاين فقط";
         if (step === 6) {
           if (!d.colors || !d.colors.length) { toast("اختر لوناً واحداً على الأقل"); return; }
         }
@@ -708,9 +702,6 @@
         }
         if (step === 8) {
           d.addons = Array.from(document.querySelectorAll(".addon-cb:checked")).map((x) => x.value);
-        }
-        if (step === 9) {
-          // go to step 10 / pay unlock
         }
         d.step = Math.min(10, step + 1);
         save();
@@ -776,7 +767,6 @@
         state.atelierOrders.unshift(order);
         state.user = Object.assign({}, state.user || {}, { email: d.email, phone: d.phone });
         logActivity("طلب جديد: " + order.designName + " (" + order.id + ")");
-        // reset draft for new order but keep identity
         state.draft = {
           step: 1,
           email: d.email,
@@ -857,7 +847,13 @@
         const title = (document.getElementById("new-design-title").value || "").trim();
         if (!title) { toast("أدخل عنواناً"); return; }
         const n = (state.designs.length % 6) + 1;
-        state.designs.unshift({ id: uid("g"), title, tag: "جرافيكس", img: "assets/sample-" + n + ".svg", hue: Math.floor(Math.random() * 360) });
+        state.designs.unshift({
+          id: uid("g"),
+          title,
+          tag: "جرافيكس",
+          img: "assets/sample-" + n + ".svg",
+          hue: Math.floor(Math.random() * 360)
+        });
         logActivity("إضافة تصميم: " + title);
         save();
         toast("تمت الإضافة");

@@ -6,14 +6,17 @@
   <meta name="theme-color" content="#E42C23" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="description" content="موقع أبو عز — تصاميم جرافيكس نظيفة، اطلب تصميمك بسهولة" />
   <title>موقع أبو عز</title>
   <link rel="icon" type="image/jpeg" href="assets/logo-abu-ezz.jpg" />
+  <link rel="apple-touch-icon" href="assets/logo-abu-ezz.jpg" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div id="maintenance-overlay" class="maintenance-overlay hidden" aria-hidden="true">
     <div class="maintenance-card">
-      <div class="spinner"></div>
+      <img src="assets/logo-abu-ezz.jpg" alt="" class="maintenance-logo" width="120" height="48" />
+      <div class="spinner" aria-hidden="true"></div>
       <p>الموقع قيد التحديث…</p>
       <p class="muted">يرجى الانتظار قليلاً</p>
     </div>
@@ -21,8 +24,7 @@
 
   <header class="app-header" id="app-header">
     <a href="#/" class="brand" aria-label="موقع أبو عز — الرئيسية">
-      <img src="assets/logo-abu-ezz.jpg" alt="أبو عز" class="brand-logo" width="120" height="48" />
-      <span class="brand-title">موقع أبو عز</span>
+      <img src="assets/logo-abu-ezz.jpg" alt="أبو عز" class="brand-logo" width="112" height="44" />
     </a>
     <div class="header-actions">
       <a href="#/orders" class="link-btn" id="btn-my-orders">طلباتي</a>
@@ -34,24 +36,32 @@
 
   <nav class="bottom-nav" aria-label="التنقل">
     <a href="#/" data-route="home" class="nav-item">
-      <span class="nav-icon">⌂</span>
+      <span class="nav-icon" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+      </span>
       <span>المعرض</span>
     </a>
     <a href="#/order" data-route="order" class="nav-item">
-      <span class="nav-icon">✦</span>
+      <span class="nav-icon" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+      </span>
       <span>طلب</span>
     </a>
     <a href="#/orders" data-route="orders" class="nav-item">
-      <span class="nav-icon">☰</span>
+      <span class="nav-icon" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+      </span>
       <span>طلباتي</span>
     </a>
     <a href="#/admin" data-route="admin" class="nav-item">
-      <span class="nav-icon">⚙</span>
+      <span class="nav-icon" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></svg>
+      </span>
       <span>إدارة</span>
     </a>
   </nav>
 
-  <div id="toast" class="toast hidden" role="status"></div>
+  <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
 
   <script src="app.js"></script>
 </body>
