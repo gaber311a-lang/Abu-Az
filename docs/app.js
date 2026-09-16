@@ -409,7 +409,7 @@
       <p class="page-sub">تأكيد بأسلوب مشابه لمتجر التطبيقات</p>
       <div class="card pay-confirm">
         <div class="side-button-metaphor" aria-hidden="true"></div>
-        <p class="double-press">اضغط زر الجانب مرتين للتأكيد<br/><span class="muted">(تعليمات توضيحية — ثم اضغط زر التأكيد أدناه)</span></p>
+        <p class="double-press">اضغط مرتين للدفع<br/><span class="muted">(استعارة زر الجانب — ثم أكّد بالزر أدناه · معاينة بدون خصم حقيقي)</span></p>
         <div class="price-box"><div class="amount">${formatMoney(total)}</div></div>
         <div class="pay-methods" id="pay-methods">
           <label class="pay-method selected"><input type="radio" name="pay" value="apple" checked /> Apple Pay</label>
@@ -441,8 +441,8 @@
     const list = myOrders();
     return `
       <div class="back-row"><button type="button" class="back-btn" id="btn-back-home">← الرئيسية</button></div>
-      <h1 class="page-title">طلباتي</h1>
-      <p class="page-sub">طلبات جلستك فقط <span class="demo-badge">معاينة</span></p>
+      <h1 class="page-title">قائمة الطلبات</h1>
+      <p class="page-sub">طلباتي — جلستك فقط <span class="demo-badge">معاينة</span></p>
       ${list.length === 0 ? `
         <div class="empty-state card">
           <p>لا توجد طلبات بعد.</p>
@@ -514,9 +514,9 @@
 
       <div class="security-panel">
         <h3>حالة الأمان <span class="demo-badge">معاينة</span></h3>
-        <div class="ok">● لا أسرار إنتاجية في الواجهة</div>
-        <div class="ok">● طلبات العملاء مفلترة حسب الجلسة/البريد</div>
-        <div class="ok">● نموذج بيانات جاهز لـ backend لاحقاً</div>
+        <div class="ok">● ملفات غير مسربة</div>
+        <div class="ok">● قاعدة بيانات مؤمّنة <span class="muted">(محاكاة محلية)</span></div>
+        <div class="ok">● تسليس للموقع</div>
         <div class="warn">● معاينة: التخزين localStorage — ليس أمان إنتاج</div>
         <div>الزوار (عداد محلي): <strong>${state.visitorCount}</strong> · أحداث: <strong>${(state.activityLog||[]).length}</strong></div>
         <div class="log-list">
@@ -726,7 +726,7 @@
     function syncIbanVisibility() {
       const method = (document.querySelector('input[name="pay"]:checked') || {}).value;
       const block = document.getElementById("iban-block");
-      if (block) block.style.opacity = method === "bank" ? "1" : "0.55";
+      if (block) block.style.display = method === "bank" ? "block" : "none";
     }
     document.querySelectorAll("#pay-methods .pay-method").forEach((lab) => {
       lab.addEventListener("click", () => {
